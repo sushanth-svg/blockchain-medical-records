@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Web3 from "web3";
-import MedicalRecordsContract from "../../build/contracts/MedicalRecords.json";
+// import MedicalRecordsContract from "./contracts/MedicalRecords.json";
+import MedicalRecordsContract from "../../frontend/src/contracts/MedicalRecords.json";
 import PatientDashboard from "./components/PatientDashboard";
 import DoctorDashboard from "./components/DoctorDashboard";
 
@@ -15,7 +16,7 @@ function App() {
             const accounts = await web3Instance.eth.getAccounts();
             const networkId = await web3Instance.eth.net.getId();
             const deployedNetwork = MedicalRecordsContract.networks[networkId];
-            const MedicalRecordsAddress = "0x030f24d3e44d22495463C1fb1c07DA28380cD337"; // Your deployed contract address
+            const MedicalRecordsAddress = "0xC75d421f8165Cae96196B5E35161f726Ec7a93c8"; // Your deployed contract address
 
             const contractInstance = new web3Instance.eth.Contract(
                 MedicalRecordsContract.abi,MedicalRecordsAddress,
@@ -32,7 +33,7 @@ function App() {
 
     const addRecord = async () => {
         const description = "Blood Test Results";
-        const ipfsHash = "QmZoZdQQA5eZzFeKSzRzbZskXuwUx3Ah5yBtTiACtfRWmr"; // Replace with actual IPFS hash for a file
+        const ipfsHash = "QmdFyM4C5SxQU4ti5pwU4NN2NiyLLgLc6o97MMZi3t72yG"; // Replace with actual IPFS hash for a file
         await contract.methods.addRecord(accounts[0], description, ipfsHash).send({
             from: accounts[0],
             gas: 3000000, });// Increase gas limit for the transaction 
@@ -43,8 +44,14 @@ function App() {
         <div>
             <h1>Blockchain Medical Records</h1>
             <button onClick={addRecord}>Add Medical Record</button>
+            {web3 && accounts.length > 0 && contract ? (
+                <>
             <PatientDashboard web3={web3} accounts={accounts} contract={contract} />
             <DoctorDashboard web3={web3} accounts={accounts} contract={contract} />
+            </>
+            ) : (
+                <p>Loading Web3, accounts, and contract...</p>
+            )}
         </div>
     );
 }

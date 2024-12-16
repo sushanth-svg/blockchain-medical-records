@@ -17,32 +17,51 @@ contract MedicalRecords {
     event AccessGranted(address indexed patient, address indexed doctor);
     event AccessRevoked(address indexed patient, address indexed doctor);
 
+    event LogMessage(string msg);
+    event LogValue(address patient);
+
+
+
     // Function to add a new medical record
     function addRecord(address patient, string memory description, string memory ipfsHash) public {
         records[patient].push(Record(description, ipfsHash, msg.sender, block.timestamp));
         emit RecordAdded(patient, description, msg.sender);
+        emit LogMessage("Adding medical records!");
+        emit LogValue(patient);
     }
 
     //Function to get all records of a patient
-    function getRecords(address patient) public view returns (Record[] memory) {
-        return records[patient];
-    }
-
-      // Function to get all records of a patient
     // function getRecords(address patient) public view returns (Record[] memory) {
-    //     require(patient == msg.sender || accessControl[patient][msg.sender], "Access denied");
     //     return records[patient];
     // }
 
+
+      // Function to get all records of a patient
+    function getRecords(address patient) public view returns (Record[] memory) {
+        require(patient == msg.sender || accessControl[patient][msg.sender], "Access denied");
+        return records[patient];
+    }
+
     // Function to grant access to a doctor
     function grantAccess(address doctor) public {
+        emit LogMessage("Grant access to doctor!");
+        emit LogValue(doctor);
+    
         accessControl[msg.sender][doctor] = true;
         emit AccessGranted(msg.sender, doctor);
     }
 
     // Function to revoke access from a doctor
     function revokeAccess(address doctor) public {
+        emit LogMessage("Revoke access to doctor!");
+        emit LogValue(doctor);
+
         accessControl[msg.sender][doctor] = false;
         emit AccessRevoked(msg.sender, doctor);
+    }
+
+    // Function to check if a doctor has access to a patient's records
+    function hasAccess(address patient, address doctor) public view returns (bool) {
+        return accessControl[patient][doctor];
     }
 }

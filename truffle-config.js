@@ -56,7 +56,7 @@ module.exports = {
    *
    * $ truffle test --network <network-name>
    */
-
+  contracts_build_directory: "./build/contracts", // Default build directory
   networks: {
     // Useful for testing. The `development` name is special - truffle uses it by default
     // if it's defined here and no other network is specified at the command line.
@@ -68,6 +68,7 @@ module.exports = {
      host: "127.0.0.1",     // 127.0.0.1 (default: none)
      port: 7545,            // Standard Ethereum port (default: none)
      network_id: "*",       // Any network (default: none)
+     chain_id: 1337,
      gas: 6000000, // Custom gas limit
      gasPrice: 20000000000 // Custom gas price
     },
@@ -118,6 +119,16 @@ module.exports = {
       //  evmVersion: "byzantium"
       // }
     }
+  },
+  after_compile: async () => {
+    const sourcePath = path.join(__dirname, "build/contracts/MedicalRecords.json");
+    const frontenddestinationPath = path.join(__dirname, "frontend/src/contracts/MedicalRecords.json");
+    const backenddestinationPath = path.join(__dirname, "backend/contracts/MedicalRecords.json");
+    await fs.copy(sourcePath, frontenddestinationPath);
+    console.log("Copied MedicalRecords.json to frontend/src/contracts/");
+
+    await fs.copy(sourcePath, backenddestinationPath);
+    console.log("Copied MedicalRecords.json to backend/src/contracts/");
   },
 
   // Truffle DB is currently disabled by default; to enable it, change enabled:
