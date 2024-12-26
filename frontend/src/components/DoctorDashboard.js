@@ -3,6 +3,7 @@ import axios from "axios";
 
 const DoctorDashboard = ({ web3, accounts, contract }) => {
     const [patientAddress, setPatientAddress] = useState("");
+    const [doctorAddress, setDoctorAddress] = useState("");
     const [records, setRecords] = useState([]);
 
     const viewRecords = async () => {
@@ -10,11 +11,17 @@ const DoctorDashboard = ({ web3, accounts, contract }) => {
             // const patientRecords = await contract.methods.getRecords(patientAddress).call({ from: accounts[0] });
             // setRecords(patientRecords);
             const response = await axios.get(`http://localhost:3001/doctor/viewRecords/${patientAddress}`, {
-                params: { doctor: accounts[1] }, // Pass the current doctor’s account
+               // params: { doctor: accounts[1] }, // Pass the current doctor’s account
+               params: { doctor: doctorAddress },
             });
+            setPatientAddress("")
+            setDoctorAddress("")
             setRecords(response.data); // Update the state with fetched records
         } catch (err) {
             console.log(err)
+            setPatientAddress("")
+            setDoctorAddress("")
+            setRecords([]);
             alert("Access denied or no records found.");
         }
     };
@@ -22,12 +29,35 @@ const DoctorDashboard = ({ web3, accounts, contract }) => {
     return (
         <div>
             <h2>Doctor Dashboard</h2>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <h3>Accessing Patient details : </h3>
             <input
                 type="text"
                 placeholder="Enter Patient Address"
                 value={patientAddress}
                 onChange={(e) => setPatientAddress(e.target.value)}
+                style={{
+                    width: "400px", // Width of the text box
+                    height: "40px", // Height of the text box
+                    padding: "10px", // Padding for better spacing
+                    fontSize: "16px", // Font size for readability
+                  }}
             />
+            <h3>By Doctor: </h3>
+            <input
+                type="text"
+                placeholder="Enter Doctor Address"
+                value={doctorAddress}
+                onChange={(e) => setDoctorAddress(e.target.value)}
+                style={{
+                    width: "400px", // Width of the text box
+                    height: "40px", // Height of the text box
+                    padding: "10px", // Padding for better spacing
+                    fontSize: "16px", // Font size for readability
+                  }}
+            />
+
+            </div>
             <button onClick={viewRecords}>View Records</button>
 
             <h3>Medical Records:</h3>
@@ -45,13 +75,9 @@ const DoctorDashboard = ({ web3, accounts, contract }) => {
                         {records.map((record, index) => (
                             <tr key={index}>
                                 <td>{record[0]}</td>
-                                <td><a
-    href={`http://127.0.0.1:8080/ipfs/${record[1]}`}
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    {record[1]} (Download)
-  </a></td>
+                                <td><a href={`http://127.0.0.1:8080/ipfs/${record[1]}`} target="_blank" rel="noopener noreferrer">
+                                    {record[1]} (Download)</a>
+                                </td>
                                 <td>{record[2]}</td>
                                 <td>{new Date(record[3] * 1000).toLocaleString()}</td>
                             </tr>

@@ -2,13 +2,17 @@ import React, { useState } from "react";
 
 const PatientDashboard = ({ web3, contract, accounts }) => {
     const [doctorAddress, setDoctorAddress] = useState("");
+    const [patientAddress, setPatientAddress] = useState("");
 
     const grantAccess = async () => {
-        const doctorAddress = prompt("Enter Doctor Address to Grant Access:");
+        // const doctorAddress = prompt("Enter Doctor Address to Grant Access:");
         if (!doctorAddress) return;
         try {
-            await contract.methods.grantAccess(doctorAddress).send({ from: accounts[0] });
-            alert("Access granted to doctor!!");
+            // await contract.methods.grantAccess(doctorAddress).send({ from: accounts[0] });
+            await contract.methods.grantAccess(doctorAddress).send({ from: patientAddress });
+            setDoctorAddress("")
+            setPatientAddress("")
+            alert("Access granted to doctor by patient!!");
         } catch (err) {
             console.log(err)
             alert("Error granting access.");
@@ -16,11 +20,14 @@ const PatientDashboard = ({ web3, contract, accounts }) => {
     };
 
     const revokeAccess = async () => {
-        const doctorAddress = prompt("Enter Doctor Address to Revoke Access:");
+        // const doctorAddress = prompt("Enter Doctor Address to Revoke Access:");
         if (!doctorAddress) return;
         try {
-            await contract.methods.revokeAccess(doctorAddress).send({ from: accounts[0] });
-            alert("Access revoked from doctor!");
+            // await contract.methods.revokeAccess(doctorAddress).send({ from: accounts[0] });
+            await contract.methods.revokeAccess(doctorAddress).send({ from: patientAddress });
+            setDoctorAddress("")
+            setPatientAddress("")
+            alert("Access revoked from doctor by patient!");
         } catch (err) {
             alert("Error revoking access.");
         }
@@ -29,8 +36,38 @@ const PatientDashboard = ({ web3, contract, accounts }) => {
     return (
         <div>
             <h2>Patient Dashboard</h2>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <h3>Grant doctor access:</h3>
+            <input
+                type="text"
+                placeholder="Enter Doctor Address"
+                value={doctorAddress}
+                onChange={(e) => setDoctorAddress(e.target.value)}
+                style={{
+                    width: "400px", // Width of the text box
+                    height: "40px", // Height of the text box
+                    padding: "10px", // Padding for better spacing
+                    fontSize: "16px", // Font size for readability
+                  }}
+            />
+              <h3>By patient:</h3>
+            <input
+                type="text"
+                placeholder="Enter Patient Address"
+                value={patientAddress}
+                onChange={(e) => setPatientAddress(e.target.value)}
+                style={{
+                    width: "400px", // Width of the text box
+                    height: "40px", // Height of the text box
+                    padding: "10px", // Padding for better spacing
+                    fontSize: "16px", // Font size for readability
+                  }}
+            />
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <button onClick={grantAccess}>Grant Access to Doctor</button>
             <button onClick={revokeAccess}>Revoke Access from Doctor</button>
+            </div>
         </div>
     );
 };

@@ -56,7 +56,6 @@ module.exports = {
    *
    * $ truffle test --network <network-name>
    */
-  contracts_build_directory: "./build/contracts", // Default build directory
   networks: {
     // Useful for testing. The `development` name is special - truffle uses it by default
     // if it's defined here and no other network is specified at the command line.
@@ -105,6 +104,10 @@ module.exports = {
   mocha: {
     // timeout: 100000
   },
+
+  contracts_build_directory: "./build/contracts", // Default build directory
+  contracts_build_directory: "./frontend/src/contracts", // Default build directory
+  contracts_build_directory: "./backend/contracts", // Default build directory
 
   // Configure your compilers
   compilers: {

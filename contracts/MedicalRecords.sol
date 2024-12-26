@@ -9,11 +9,15 @@ contract MedicalRecords {
         uint256 timestamp;
     }
 
-    mapping(address => Record[]) private records; // Patient's medical records
-    mapping(address => mapping(address => bool)) private accessControl; // Patient's consent for doctors
+    // mapping(address => Record[]) private records; // Patient's medical records
+    // mapping(address => mapping(address => bool)) private accessControl; // Patient's consent for doctors
 
+    // Mapping: Patient -> (Doctor -> Records)
+    mapping(address => mapping(address => Record[])) private records;
+    // Access control: Patient -> (Doctor -> Access Granted)
+    mapping(address => mapping(address => bool)) private accessControl;
 
-    event RecordAdded(address patient, string description, address doctor);
+    event RecordAdded(address indexed patient, string description, address indexed doctor);
     event AccessGranted(address indexed patient, address indexed doctor);
     event AccessRevoked(address indexed patient, address indexed doctor);
 
@@ -24,10 +28,10 @@ contract MedicalRecords {
 
     // Function to add a new medical record
     function addRecord(address patient, string memory description, string memory ipfsHash) public {
-        records[patient].push(Record(description, ipfsHash, msg.sender, block.timestamp));
+        records[patient][msg.sender].push(Record(description, ipfsHash, msg.sender, block.timestamp));
         emit RecordAdded(patient, description, msg.sender);
         emit LogMessage("Adding medical records!");
-        emit LogValue(patient);
+       // emit LogValue(patient);
     }
 
     //Function to get all records of a patient
@@ -39,7 +43,7 @@ contract MedicalRecords {
       // Function to get all records of a patient
     function getRecords(address patient) public view returns (Record[] memory) {
         require(patient == msg.sender || accessControl[patient][msg.sender], "Access denied");
-        return records[patient];
+        return records[patient][msg.sender];
     }
 
     // Function to grant access to a doctor
